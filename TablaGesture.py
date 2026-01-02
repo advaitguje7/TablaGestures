@@ -10,34 +10,13 @@ MODEL_PATH = "hand_landmarker.task"
 
 # TO-DO
 # Add dynamic list for multiple talas
-# Add reset func
-# get matras to work
-# add dynamic threshold
-# improve sensitivity
-# fix display
-
+# make display better
 def dist_3d(p1, p2, w, h):
     # Convert normalized MediaPipe coordinates to pixel/scale space
     dx = (p1.x - p2.x) * w
     dy = (p1.y - p2.y) * h
     dz = (p1.z - p2.z) * w
-    return math.sqrt(dx**2 + dy**2 + dz**2)
-def dist_virtual(p1, p2_xy):
-    """
-    Docstring for dist_virtual
-    
-    :param p1: lm[]
-    :param p2_xy: tuple
-    """
-
-    p2x = p2_xy[0]
-    p2y = p2_xy[1]
-
-    dx = (p1.x - p2x)
-    dy = (p1.y - p2y)
-
-    return math.sqrt(dx**2 + dy**2)
-    
+    return math.sqrt(dx**2 + dy**2 + dz**2)  
 
 def main():
     cap = cv2.VideoCapture(0)
@@ -55,31 +34,7 @@ def main():
 
     landmarker = vision.HandLandmarker.create_from_options(options)
 
-    
-    prev_pinched_pinky0 = False
-    prev_pinched_pinky1 = False
-    prev_pinched_pinky2 = False
-    prev_pinched_pinky3 = False
-
-    prev_pinched_ring0 = False
-    prev_pinched_ring1 = False
-    prev_pinched_ring2 = False
-    prev_pinched_ring3 = False
-
-    prev_pinched_middle0 = False
-    prev_pinched_middle1 = False
-    prev_pinched_middle2 = False
-    prev_pinched_middle3 = False
-
-    prev_pinched_index0 = False
-    prev_pinched_index1 = False
-    prev_pinched_index2 = False
-    prev_pinched_index3 = False
-
-    prev_pinched = [prev_pinched_pinky0, prev_pinched_pinky1, prev_pinched_pinky2, prev_pinched_pinky3,
-                    prev_pinched_ring0, prev_pinched_ring1, prev_pinched_ring2, prev_pinched_ring3,
-                    prev_pinched_middle0, prev_pinched_middle1, prev_pinched_middle2, prev_pinched_middle3,
-                    prev_pinched_index0, prev_pinched_index1, prev_pinched_index2, prev_pinched_index3]
+    prev_pinched = [False] * 16
     
     prev_pinched_init_0 = False
     prev_pinched_init_1 = False
@@ -91,11 +46,10 @@ def main():
 
     class Finger(Enum):
                  MISSING = -1
-                 PALM = 0
-                 PINKY = 1
-                 RING = 2
-                 MIDDLE = 3
-                 INDEX = 4
+                 PINKY = 0
+                 RING = 1
+                 MIDDLE = 2
+                 INDEX = 3
 
     select = Finger.MISSING
 
@@ -105,10 +59,14 @@ def main():
             'Ta', 'Dhin', 'Dhin', 'Dha']
     Ektaal = ['Dhin', 'Dhin', 'DhaGe', 'Tirkit', 'Tu', 'Na',
               'Kat', 'Ta', 'DhaGe', 'Tirkit', 'Dhin', 'Na']
+    Ektaal += ['Null'] * 10
     Jhaptaal = ['Dhi', 'Na', 'Dhi', 'Dhi', 'Na',
                 'Ti', 'Na', 'Dhi', 'Dhi', 'Na']
+    Jhaptaal += ['Null'] * 6
     Rupak = ['Ti', 'Ti', 'Na',
              'Dhin', 'Na', 'Dhin', 'Na']
+    Rupak += ['Null'] * 9
+
     Taals = [Teentaal, Ektaal, Jhaptaal, Rupak]
 
     while True:
@@ -145,10 +103,15 @@ def main():
             index3 = lm[8]
             index3_xy = (int(index3.x * w), int(index3.y * h))
 
-            # wrist = lm[0]
-            mid_mcp = lm[3]
+            wrist = lm[0]
+            mid_mcp = lm[9]
 
-            # center_xy = (int((((wrist.x  + reset.x) / 2) * w)), int((((wrist.y  + reset.y) / 2) * h)))
+            s = dist_3d(wrist, mid_mcp, w, h)   # hand scale in pixels-ish
+            PINCH_ON  = 0.30 * s
+            PINCH_OFF = 0.45 * s
+
+
+            wrist_xy = (int((wrist.x * w)), int(wrist.y * h))
 
             # s = dist_3d(wrist, mid_mcp, w, h)
             # threshold = 0.025 * s
@@ -168,10 +131,10 @@ def main():
             pinch_px_init_middle = dist_3d(thumb, middle3, w, h)
             pinch_px_init_index = dist_3d(thumb, index3, w, h)
 
-            pinched_pinky  = pinch_px_init_pinky < 10
-            pinched_ring = pinch_px_init_ring < 10
-            pinched_middle = pinch_px_init_middle < 10
-            pinched_index = pinch_px_init_index < 10
+            pinched_pinky  = pinch_px_init_pinky < 20
+            pinched_ring = pinch_px_init_ring < 20
+            pinched_middle = pinch_px_init_middle < 20
+            pinched_index = pinch_px_init_index < 20
         
             now = time.time()
             if select == Finger.MISSING:
@@ -220,7 +183,7 @@ def main():
                 # pinky landmarks
                 pinky0 = lm[17]
                 pinky1 = lm[18]
-                pinky0_cxy = (int(((pinky0.x + pinky1.x) / 2) * w), int(((pinky0.y + pinky1.y) / 2) * h))
+                # pinky0_cxy = (int(((pinky0.x + pinky1.x) / 2) * w), int(((pinky0.y + pinky1.y) / 2) * h))
                 pinky2 = lm[19]
 
                 # pinky_xy
@@ -366,7 +329,7 @@ def main():
                 offset = 12
 
                 reset_dist_index = math.hypot(index0_xy[0] - index3_xy[0], index0_xy[1] - index3_xy[1])
-            # RESET CONDITION
+            ############### RESET CONDITION #################
             if ((select != Finger.MISSING) & ( (reset_dist_pinky < 5) | (reset_dist_ring < 5) | (reset_dist_middle < 5) | (reset_dist_index < 5) )):
                  select = Finger.MISSING
                  prev_pinched = [False] * 16
@@ -376,8 +339,8 @@ def main():
                  best = min(pinch_px)
             else:
                  best = 0
-            PINCH_ON = 30
-            PINCH_OFF = 60
+            # PINCH_ON = 30
+            # PINCH_OFF = 60
             
             for i in range(len(pinch_px)):
                 idx = offset + i
