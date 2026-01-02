@@ -57,18 +57,28 @@ def main():
             'Dha', 'Dhin', 'Dhin', 'Dha',
             'Dha', 'Tin', 'Tin', 'Ta',
             'Ta', 'Dhin', 'Dhin', 'Dha']
-    Ektaal = ['Dhin', 'Dhin', 'DhaGe', 'Tirkit', 'Tu', 'Na',
-              'Kat', 'Ta', 'DhaGe', 'Tirkit', 'Dhin', 'Na']
+    
+    Ektaal = ['Dhin', 'Dhin', 'DhaGe', 'Tirkit', 'Tu', 'Na', 'Kat', 'Ta', 'DhaGe', 'Tirkit', 'Dhin', 'Na']
     Ektaal += ['Null'] * 10
-    Jhaptaal = ['Dhi', 'Na', 'Dhi', 'Dhi', 'Na',
-                'Ti', 'Na', 'Dhi', 'Dhi', 'Na']
+
+    Jhaptaal = ['Dhi', 'Na', 'Dhi', 'Dhi', 'Na', 'Ti', 'Na', 'Dhi', 'Dhi', 'Na']
     Jhaptaal += ['Null'] * 6
-    Rupak = ['Ti', 'Ti', 'Na',
-             'Dhin', 'Na', 'Dhin', 'Na']
+
+    Rupak = ['Ti', 'Ti', 'Na','Dhin', 'Na', 'Dhin', 'Na']
     Rupak += ['Null'] * 9
 
-    Taals = [Teentaal, Ektaal, Jhaptaal, Rupak]
+    AdiTalam = ['Tha', 'Ka', 'Dhi', 'Mi', 'Tha', 'Ka', 'Jhu', 'Nu']
+    AdiTalam += ['Null'] * 8
 
+    TalasDict = {"Teeltaal": Teentaal, "Ektaal": Ektaal, "Jhaptaal": Jhaptaal, "Rupak": Rupak, "AdiTalam": AdiTalam}
+    TalasList = ["Teentaal", "Ektaal", "Jhaptaal", "Rupak", "AdiTalam"]
+    TalaIndex = 0
+    
+
+    Taal_Chosen = 'Ektaal'
+    Taal = TalasDict[Taal_Chosen]
+    
+    bol = "--"
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -81,7 +91,7 @@ def main():
         result = landmarker.detect(mp_image)
 
         status = "NO HAND"
-        bol = "NULL"
+        
 
         if result.hand_landmarks:
             lm = result.hand_landmarks[0]
@@ -111,12 +121,6 @@ def main():
             PINCH_ON  = 0.30 * s
             PINCH_OFF = 0.45 * s
 
-
-            wrist_xy = (int((wrist.x * w)), int(wrist.y * h))
-
-            # s = dist_3d(wrist, mid_mcp, w, h)
-            # threshold = 0.025 * s
-
             cv2.circle(frame, thumb_xy, 5, (255, 0, 255), -1)
 
             show_circle = True
@@ -140,35 +144,44 @@ def main():
             now = time.time()
             if select == Finger.MISSING:
                 if pinched_pinky and not prev_pinched_init_0 and (now - last_trigger_time[3] > cooldown_s):
-                        last_trigger_time[3] = now
-                        print("Pinky")
-                        select = Finger.PINKY
-                # prev_pinched_init_0 = pinched_pinky
-                status = f"PINCH_PX: {pinch_px_init_pinky:.1f}"
+                    last_trigger_time[3] = now
+                    print("Pinky")
+                    select = Finger.PINKY
+            # prev_pinched_init_0 = pinched_pinky
+                    status = f"PINCH_PX: {pinch_px_init_pinky:.1f}"
 
                 if pinched_ring and not prev_pinched_init_1 and (now - last_trigger_time[7] > cooldown_s):
-                        last_trigger_time[7] = now
-                        print("Ring")
-                        select = Finger.RING
-
-                # prev_pinched_init_1 = pinched_ring
-                status = f"PINCH_PX: {pinch_px_init_ring:.1f}"
+                    last_trigger_time[7] = now
+                    print("Ring")
+                    select = Finger.RING
+                    # prev_pinched_init_1 = pinched_ring
+                    status = f"PINCH_PX: {pinch_px_init_ring:.1f}"
                 
                 if pinched_middle and not prev_pinched_init_2 and (now - last_trigger_time[10] > cooldown_s):
-                        last_trigger_time[10] = now
-                        print("Middle")
-                        select = Finger.MIDDLE
-
+                    last_trigger_time[10] = now
+                    print("Middle")
+                    select = Finger.MIDDLE
                 # prev_pinched_init_2 = pinched_middle
-                status = f"PINCH_PX: {pinch_px_init_middle:.1f}"
+                    status = f"PINCH_PX: {pinch_px_init_middle:.1f}"
 
                 if pinched_index and not prev_pinched_init_3 and (now - last_trigger_time[13] > cooldown_s):
-                        last_trigger_time[13] = now
-                        print("Index")
-                        select = Finger.INDEX
+                    last_trigger_time[13] = now
+                    print("Index")
+                    select = Finger.INDEX
+                    # prev_pinched_init_3 = pinched_index
+                    status = f"PINCH_PX: {pinch_px_init_index:.1f}"
+                
+                pinch_px_reset_check0 = dist_3d(pinky3, ring3, w, h)
+                pinch_px_reset_check1 = dist_3d(ring3, middle3, w, h)
+                pinch_px_reset_check2 = dist_3d(middle3, index3, w, h)
+                pinch_px_reset_check3 = dist_3d(index3, thumb, w, h)
+                pinch_px_reset_check4 = dist_3d(thumb, pinky3, w, h)
 
-                # prev_pinched_init_3 = pinched_index
-                status = f"PINCH_PX: {pinch_px_init_index:.1f}"
+                if ( (pinch_px_reset_check0 < 10) & (pinch_px_reset_check1 < 10) & (pinch_px_reset_check2 < 10) 
+                    & (pinch_px_reset_check3 < 10) & (pinch_px_reset_check4 < 10) ):
+                     TalaIndex += 1
+                     if TalaIndex == len(TalasList): 
+                          TalaIndex = 0
 
             ############### CONDITIONAL #####################################
             pinch_px = []
@@ -199,10 +212,9 @@ def main():
                 cv2.circle(frame, pinky3_xy, 5, (0, 0, 255), -1)
 
                 #pinky lines
-                # cv2.line(frame, thumb_xy, pinky0_xy, (255, 255, 255), 2)
-                # cv2.line(frame, thumb_xy, pinky1_xy, (255, 255, 255), 2) 
-                # cv2.line(frame, thumb_xy, pinky2_xy, (255, 255, 255), 2) 
-                # cv2.line(frame, thumb_xy, pinky3_xy, (255, 255, 255), 2) 
+                cv2.line(frame, pinky0_xy, pinky1_xy, (255, 255, 255), 1)
+                cv2.line(frame, pinky1_xy, pinky2_xy, (255, 255, 255), 1) 
+                cv2.line(frame, pinky2_xy, pinky3_xy, (255, 255, 255), 1) 
 
                 # pinky matras
                 pinch_px_matra1 = dist_3d(thumb, pinky0, w, h)
@@ -236,9 +248,9 @@ def main():
                 cv2.circle(frame, ring3_xy, 5, (0, 255, 255), -1)
 
                 # ring lines
-                # cv2.line(frame, thumb_xy, ring0_xy, (0, 0, 0), 2) 
-                # cv2.line(frame, thumb_xy, ring1_xy, (0, 0, 0), 2) 
-                # cv2.line(frame, thumb_xy, ring2_xy, (0, 0, 0), 2) 
+                cv2.line(frame, ring0_xy, ring1_xy, (255, 255, 255), 1) 
+                cv2.line(frame, ring1_xy, ring2_xy, (255, 255, 255), 1) 
+                cv2.line(frame, ring2_xy, ring3_xy, (255, 255, 255), 1) 
                 # cv2.line(frame, thumb_xy, ring3_xy, (0, 0, 0), 2) 
 
                 # ring matras
@@ -274,9 +286,9 @@ def main():
                 cv2.circle(frame, middle3_xy, 5, (0, 255, 0), -1)
 
                 # middle lines
-                # cv2.line(frame, thumb_xy, middle0_xy, (0, 0, 0), 2) 
-                # cv2.line(frame, thumb_xy, middle1_xy, (0, 0, 0), 2) 
-                # cv2.line(frame, thumb_xy, middle2_xy, (0, 0, 0), 2) 
+                cv2.line(frame, middle0_xy, middle1_xy, (255, 255, 255), 1) 
+                cv2.line(frame, middle1_xy, middle2_xy, (255, 255, 255), 1) 
+                cv2.line(frame, middle2_xy, middle3_xy, (255, 255, 255), 1) 
                 # cv2.line(frame, thumb_xy, middle3_xy, (0, 0, 0), 2) 
 
                 # middle matras
@@ -314,9 +326,9 @@ def main():
                 cv2.circle(frame, index3_xy, 5, (255, 0, 0), -1)    
 
                 # index lines
-                # cv2.line(frame, thumb_xy, index0_xy, (0, 0, 0), 2) 
-                # cv2.line(frame, thumb_xy, index1_xy, (0, 0, 0), 2)
-                # cv2.line(frame, thumb_xy, index2_xy, (0, 0, 0), 2) 
+                cv2.line(frame, index0_xy, index1_xy, (255, 255, 255), 1) 
+                cv2.line(frame, index1_xy, index2_xy, (255, 255, 255), 1)
+                cv2.line(frame, index2_xy, index3_xy, (255, 255, 255), 1) 
                 # cv2.line(frame, thumb_xy, index3_xy, (0, 0, 0), 2) 
 
                 # index matras
@@ -330,6 +342,7 @@ def main():
                 offset = 12
 
                 reset_dist_index = math.hypot(index0_xy[0] - index3_xy[0], index0_xy[1] - index3_xy[1])
+
             ############### RESET CONDITION #################
             if ((select != Finger.MISSING) & ( (reset_dist_pinky < 5) | (reset_dist_ring < 5) | (reset_dist_middle < 5) | (reset_dist_index < 5) )):
                  select = Finger.MISSING
@@ -340,6 +353,7 @@ def main():
                  best = min(pinch_px)
             else:
                  best = 0
+
             # PINCH_ON = 30
             # PINCH_OFF = 60
             
@@ -353,13 +367,13 @@ def main():
                 now = time.time()
                 if (pinched == True) and (not prev_pinched[idx]) and (now - last_trigger_time[idx] > cooldown_s):
                     last_trigger_time[idx] = now
-                    cout = str(Teentaal[idx]) + ' ' + str(idx + 1)
+                    cout = str(Taal[idx]) + ' ' + str(idx + 1)
                     if (idx == 0):
                          cout += ' (Sam)'
                     elif (idx == 8):
                          cout += ' Khali'
                     print(cout)
-                    bol = f"BOL: {Teentaal[idx]}"
+                    bol = f"BOL: {cout}"
                     
 
                 prev_pinched[idx] = pinched
@@ -370,7 +384,10 @@ def main():
         cv2.putText(frame, status, (20, 40),
         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
 
-        cv2.putText(frame, bol, (40, 80),
+        cv2.putText(frame, f"Tala: {TalasDict[TalasList[TalaIndex]]}", (20, 80),
+        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+
+        cv2.putText(frame, bol, (20, 120),
         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
         
         cv2.imshow("Hand V1 (new API)", frame)
