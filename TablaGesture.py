@@ -26,8 +26,32 @@ def main():
 
     landmarker = vision.HandLandmarker.create_from_options(options)
 
-
+    
     prev_pinched_pinky0 = False
+    prev_pinched_pinky1 = False
+    prev_pinched_pinky2 = False
+    prev_pinched_pinky3 = False
+
+    prev_pinched_ring0 = False
+    prev_pinched_ring1 = False
+    prev_pinched_ring2 = False
+    prev_pinched_ring3 = False
+
+    prev_pinched_middle0 = False
+    prev_pinched_middle1 = False
+    prev_pinched_middle2 = False
+    prev_pinched_middle3 = False
+
+    prev_pinched_index0 = False
+    prev_pinched_index1 = False
+    prev_pinched_index2 = False
+    prev_pinched_index3 = False
+
+    prev_pinched = [prev_pinched_pinky0, prev_pinched_pinky1, prev_pinched_pinky2, prev_pinched_pinky3,
+                    prev_pinched_ring0, prev_pinched_ring1, prev_pinched_ring2, prev_pinched_ring3,
+                    prev_pinched_middle0, prev_pinched_middle1, prev_pinched_middle2, prev_pinched_middle3,
+                    prev_pinched_index0, prev_pinched_index1, prev_pinched_index2, prev_pinched_index3]
+    
     last_trigger_time = 0.0
     cooldown_s = 0.12
 
@@ -136,10 +160,7 @@ def main():
 
 
             cv2.line(frame, thumb_xy, index3_xy, (0, 255, 0), 2) # line: thumb to index3
-
-            pinch_px = dist(thumb_xy, pinky0_xy)
             
-
             pinch_px_matra1 = dist(thumb_xy, pinky0_xy)
             pinch_px_matra2 = dist(thumb_xy, pinky1_xy)
             pinch_px_matra3 = dist(thumb_xy, pinky2_xy)
@@ -160,22 +181,21 @@ def main():
             pinch_px_matra15 = dist(thumb_xy, index2_xy)
             pinch_px_matra16 = dist(thumb_xy, pinky3_xy)
 
+            pinch_px = [pinch_px_matra1, pinch_px_matra2, pinch_px_matra3, pinch_px_matra4,
+                        pinch_px_matra5, pinch_px_matra6, pinch_px_matra7, pinch_px_matra8,
+                        pinch_px_matra9, pinch_px_matra10, pinch_px_matra11, pinch_px_matra12,
+                        pinch_px_matra13, pinch_px_matra14, pinch_px_matra15, pinch_px_matra16]
+            
+            for i in range(len(prev_pinched)):
+                pinched  = pinch_px[i] < 40
+                now = time.time()
+                if pinched and not prev_pinched[i] and (now - last_trigger_time > cooldown_s):
+                    last_trigger_time = now
+                    print("Matra" + str(i + 1))
 
-            PINCH_ON = 60
-            PINCH_OFF = 90
-
-            if prev_pinched_pinky0:
-                pinched  = pinch_px_matra1 < PINCH_OFF
-            else:
-                pinched  = pinch_px_matra1 < PINCH_ON
-
-            now = time.time()
-            if pinched and not prev_pinched_pinky0 and (now - last_trigger_time > cooldown_s):
-                last_trigger_time = now
-                print("Matra 1 (Sam)")
-
-            prev_pinched_pinky0 = pinched
-            status = f"PINCH_PX: {pinch_px_matra1:.1f}"
+                prev_pinched[i] = pinched
+                status = f"PINCH_PX: {pinch_px[i]:.1f}"
+            
 
         cv2.putText(frame, status, (20, 40),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
