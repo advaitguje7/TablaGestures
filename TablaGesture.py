@@ -22,6 +22,22 @@ def dist_3d(p1, p2, w, h):
     dy = (p1.y - p2.y) * h
     dz = (p1.z - p2.z) * w
     return math.sqrt(dx**2 + dy**2 + dz**2)
+def dist_virtual(p1, p2_xy):
+    """
+    Docstring for dist_virtual
+    
+    :param p1: lm[]
+    :param p2_xy: tuple
+    """
+
+    p2x = p2_xy[0]
+    p2y = p2_xy[1]
+
+    dx = (p1.x - p2x)
+    dy = (p1.y - p2y)
+
+    return math.sqrt(dx**2 + dy**2)
+    
 
 def main():
     cap = cv2.VideoCapture(0)
@@ -74,7 +90,8 @@ def main():
     cooldown_s = 0.5
 
     class Finger(Enum):
-                 MISSING = 0
+                 MISSING = -1
+                 PALM = 0
                  PINKY = 1
                  RING = 2
                  MIDDLE = 3
@@ -82,10 +99,17 @@ def main():
 
     select = Finger.MISSING
 
-    taal = ['Dha', 'Dhin', 'Dhin', 'Dha', 
+    Teentaal = ['Dha', 'Dhin', 'Dhin', 'Dha', 
             'Dha', 'Dhin', 'Dhin', 'Dha',
             'Dha', 'Tin', 'Tin', 'Ta',
-            'Ta', 'Dhin', 'Dhin' 'Dha']
+            'Ta', 'Dhin', 'Dhin', 'Dha']
+    Ektaal = ['Dhin', 'Dhin', 'DhaGe', 'Tirkit', 'Tu', 'Na',
+              'Kat', 'Ta', 'DhaGe', 'Tirkit', 'Dhin', 'Na']
+    Jhaptaal = ['Dhi', 'Na', 'Dhi', 'Dhi', 'Na',
+                'Ti', 'Na', 'Dhi', 'Dhi', 'Na']
+    Rupak = ['Ti', 'Ti', 'Na',
+             'Dhin', 'Na', 'Dhin', 'Na']
+    Taals = [Teentaal, Ektaal, Jhaptaal, Rupak]
 
     while True:
         ret, frame = cap.read()
@@ -104,17 +128,11 @@ def main():
             lm = result.hand_landmarks[0]
 
             # MediaPipe landmark indices
-
-            wrist = lm[0]
-            mid_mcp = lm[9]
-
-            # s = dist_3d(wrist, mid_mcp, w, h)
-            # threshold = 0.025 * s
             
             thumb = lm[4]
             thumb_xy = (int(thumb.x * w), int(thumb.y * h))
 
-            # initial 
+            ########## INITIAL #################### 
             pinky3 = lm[20]
             pinky3_xy = (int(pinky3.x * w), int(pinky3.y * h))
 
@@ -127,7 +145,20 @@ def main():
             index3 = lm[8]
             index3_xy = (int(index3.x * w), int(index3.y * h))
 
+            # wrist = lm[0]
+            reset = lm[2]
+
+            # center_xy = (int((((wrist.x  + reset.x) / 2) * w)), int((((wrist.y  + reset.y) / 2) * h)))
+            reset_xy = (int(reset.x * w), int(reset.y * h))
+            reset_dist = dist_virtual(thumb, reset_xy)
+
+            # s = dist_3d(wrist, mid_mcp, w, h)
+            # threshold = 0.025 * s
             cv2.circle(frame, thumb_xy, 5, (255, 0, 255), -1)
+            cv2.circle(frame, reset_xy, 8, (255, 255, 0), -1)
+
+
+            
 
             show_circle = True
 
@@ -154,7 +185,7 @@ def main():
                         print("Pinky")
                         select = Finger.PINKY
                 # prev_pinched_init_0 = pinched_pinky
-                # status = f"PINCH_PX: {pinch_px_init_pinky:.1f}"
+                status = f"PINCH_PX: {pinch_px_init_pinky:.1f}"
 
                 if pinched_ring and not prev_pinched_init_1 and (now - last_trigger_time[7] > cooldown_s):
                         last_trigger_time[7] = now
@@ -162,7 +193,7 @@ def main():
                         select = Finger.RING
 
                 # prev_pinched_init_1 = pinched_ring
-                # status = f"PINCH_PX: {pinch_px_init_ring:.1f}"
+                status = f"PINCH_PX: {pinch_px_init_ring:.1f}"
                 
                 if pinched_middle and not prev_pinched_init_2 and (now - last_trigger_time[10] > cooldown_s):
                         last_trigger_time[10] = now
@@ -170,7 +201,7 @@ def main():
                         select = Finger.MIDDLE
 
                 # prev_pinched_init_2 = pinched_middle
-                # status = f"PINCH_PX: {pinch_px_init_middle:.1f}"
+                status = f"PINCH_PX: {pinch_px_init_middle:.1f}"
 
                 if pinched_index and not prev_pinched_init_3 and (now - last_trigger_time[13] > cooldown_s):
                         last_trigger_time[13] = now
@@ -178,16 +209,9 @@ def main():
                         select = Finger.INDEX
 
                 # prev_pinched_init_3 = pinched_index
-                # status = f"PINCH_PX: {pinch_px_init_index:.1f}"
+                status = f"PINCH_PX: {pinch_px_init_index:.1f}"
 
-            cv2.putText(frame, status, (20, 40),
-            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
-
-            ####################################################
-                
-
-            # INITIALIZE FINGER
-            # TK ADD RESET FUNCTION
+            ############### CONDITIONAL #####################################
             pinch_px = []
             offset = 0
             if select == Finger.PINKY:
@@ -210,11 +234,11 @@ def main():
                 cv2.circle(frame, pinky2_xy, 5, (0, 0, 255), -1)
                 cv2.circle(frame, pinky3_xy, 5, (0, 0, 255), -1)
 
-                # pinky lines
-                # cv2.line(frame, thumb_xy, pinky0_xy, (0, 0, 0), 2)
-                # cv2.line(frame, thumb_xy, pinky1_xy, (0, 0, 0), 2) 
-                # cv2.line(frame, thumb_xy, pinky2_xy, (0, 0, 0), 2) 
-                # cv2.line(frame, thumb_xy, pinky3_xy, (0, 0, 0), 2) 
+                #pinky lines
+                # cv2.line(frame, thumb_xy, pinky0_xy, (255, 255, 255), 2)
+                # cv2.line(frame, thumb_xy, pinky1_xy, (255, 255, 255), 2) 
+                # cv2.line(frame, thumb_xy, pinky2_xy, (255, 255, 255), 2) 
+                # cv2.line(frame, thumb_xy, pinky3_xy, (255, 255, 255), 2) 
 
                 # pinky matras
                 pinch_px_matra1 = dist_3d(thumb, pinky0, w, h)
@@ -334,6 +358,10 @@ def main():
 
                 offset = 12
             
+            if (reset_dist < 10):
+                 select = Finger.MISSING
+                 show_circle = True
+            
             
             if (select != Finger.MISSING):
                  best = min(pinch_px)
@@ -348,16 +376,21 @@ def main():
                      pinched = pinch_px[i] < PINCH_ON and (pinch_px[i] == best)
 
                 now = time.time()
-                if (pinched == True) and (not prev_pinched[idx]) and (now - last_trigger_time[i] > cooldown_s):
+                if (pinched == True) and (not prev_pinched[idx]) and (now - last_trigger_time[idx] > cooldown_s):
                     last_trigger_time[i] = now
-                    print("Matra " + str(idx + 1))
+                    cout = str(Teentaal[idx]) + ' ' + str(idx + 1)
+                    if (idx == 0):
+                         cout += ' (Sam)'
+                    elif (idx == 8):
+                         cout += ' Khali'
+                    print(cout)
 
-                prev_pinched[i] = pinched
+                prev_pinched[idx] = pinched
                 status = f"PINCH_PX: {pinch_px[i]:.1f}"
             
 
         cv2.putText(frame, status, (20, 40),
-        cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
         
         cv2.imshow("Hand V1 (new API)", frame)
         if cv2.waitKey(1) & 0xFF == 27:
