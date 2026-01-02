@@ -81,6 +81,7 @@ def main():
         result = landmarker.detect(mp_image)
 
         status = "NO HAND"
+        bol = "NULL"
 
         if result.hand_landmarks:
             lm = result.hand_landmarks[0]
@@ -351,19 +352,25 @@ def main():
 
                 now = time.time()
                 if (pinched == True) and (not prev_pinched[idx]) and (now - last_trigger_time[idx] > cooldown_s):
-                    last_trigger_time[i] = now
+                    last_trigger_time[idx] = now
                     cout = str(Teentaal[idx]) + ' ' + str(idx + 1)
                     if (idx == 0):
                          cout += ' (Sam)'
                     elif (idx == 8):
                          cout += ' Khali'
                     print(cout)
+                    bol = f"BOL: {Teentaal[idx]}"
+                    
 
                 prev_pinched[idx] = pinched
                 status = f"PINCH_PX: {pinch_px[i]:.1f}"
+               
             
 
         cv2.putText(frame, status, (20, 40),
+        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+
+        cv2.putText(frame, bol, (40, 80),
         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
         
         cv2.imshow("Hand V1 (new API)", frame)
