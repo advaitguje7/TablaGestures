@@ -146,19 +146,14 @@ def main():
             index3_xy = (int(index3.x * w), int(index3.y * h))
 
             # wrist = lm[0]
-            reset = lm[2]
+            mid_mcp = lm[3]
 
             # center_xy = (int((((wrist.x  + reset.x) / 2) * w)), int((((wrist.y  + reset.y) / 2) * h)))
-            reset_xy = (int(reset.x * w), int(reset.y * h))
-            reset_dist = dist_virtual(thumb, reset_xy)
 
             # s = dist_3d(wrist, mid_mcp, w, h)
             # threshold = 0.025 * s
+
             cv2.circle(frame, thumb_xy, 5, (255, 0, 255), -1)
-            cv2.circle(frame, reset_xy, 8, (255, 255, 0), -1)
-
-
-            
 
             show_circle = True
 
@@ -214,6 +209,11 @@ def main():
             ############### CONDITIONAL #####################################
             pinch_px = []
             offset = 0
+            reset_dist_pinky = 100.0
+            reset_dist_ring = 100.0
+            reset_dist_middle = 100.0
+            reset_dist_index = 100.0
+
             if select == Finger.PINKY:
                 show_circle = False
                 
@@ -247,6 +247,9 @@ def main():
                 pinch_px_matra4 = dist_3d(thumb, pinky3, w, h)
 
                 pinch_px = [pinch_px_matra1, pinch_px_matra2, pinch_px_matra3, pinch_px_matra4]
+
+                reset_dist_pinky = math.hypot(pinky0_xy[0] - pinky3_xy[0], pinky0_xy[1] - pinky3_xy[1])
+
                 
             elif select == Finger.RING:
                 show_circle = False
@@ -283,6 +286,8 @@ def main():
                 pinch_px = [pinch_px_matra5, pinch_px_matra6, pinch_px_matra7, pinch_px_matra8]
 
                 offset = 4
+
+                reset_dist_ring = math.hypot(ring0_xy[0] - ring3_xy[0], ring0_xy[1] - ring3_xy[1])
                 
             elif select == Finger.MIDDLE:
                 show_circle = False
@@ -319,6 +324,8 @@ def main():
                 pinch_px = [pinch_px_matra9, pinch_px_matra10, pinch_px_matra11, pinch_px_matra12]
 
                 offset = 8
+
+                reset_dist_middle = math.hypot(middle0_xy[0] - middle3_xy[0], middle0_xy[1] - middle3_xy[1])
                 
             elif select == Finger.INDEX:
                 show_circle = False
@@ -357,14 +364,18 @@ def main():
                 pinch_px = [pinch_px_matra13, pinch_px_matra14, pinch_px_matra15, pinch_px_matra16]
 
                 offset = 12
-            
-            if (reset_dist < 10):
+
+                reset_dist_index = math.hypot(index0_xy[0] - index3_xy[0], index0_xy[1] - index3_xy[1])
+            # RESET CONDITION
+            if ((select != Finger.MISSING) & ( (reset_dist_pinky < 5) | (reset_dist_ring < 5) | (reset_dist_middle < 5) | (reset_dist_index < 5) )):
                  select = Finger.MISSING
-                 show_circle = True
-            
+                 prev_pinched = [False] * 16
+                 print("Reset")
             
             if (select != Finger.MISSING):
                  best = min(pinch_px)
+            else:
+                 best = 0
             PINCH_ON = 30
             PINCH_OFF = 60
             
