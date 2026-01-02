@@ -8,6 +8,13 @@ from enum import Enum
 
 MODEL_PATH = "hand_landmarker.task"
 
+# TO-DO
+# Add dynamic list for multiple talas
+# Add reset func
+# remove points after initial select
+# get matras to work
+# add dynamic threshold
+
 def dist_3d(p1, p2, w, h):
     # Convert normalized MediaPipe coordinates to pixel/scale space
     dx = (p1.x - p2.x) * w
@@ -135,37 +142,37 @@ def main():
             pinched_index = pinch_px_init_index < 10
         
             now = time.time()
-            if pinched_pinky and not prev_pinched_init_0 and (now - last_trigger_time[3] > cooldown_s):
-                    last_trigger_time[3] = now
-                    print("Pinky")
-                    select = Finger.PINKY
+            if select == Finger.MISSING:
+                if pinched_pinky and not prev_pinched_init_0 and (now - last_trigger_time[3] > cooldown_s):
+                        last_trigger_time[3] = now
+                        print("Pinky")
+                        select = Finger.PINKY
+                # prev_pinched_init_0 = pinched_pinky
+                # status = f"PINCH_PX: {pinch_px_init_pinky:.1f}"
 
-            prev_pinched_init_0 = pinched_pinky
-            status = f"PINCH_PX: {pinch_px_init_pinky:.1f}"
+                if pinched_ring and not prev_pinched_init_1 and (now - last_trigger_time[7] > cooldown_s):
+                        last_trigger_time[7] = now
+                        print("Ring")
+                        select = Finger.RING
 
-            if pinched_ring and not prev_pinched_init_1 and (now - last_trigger_time[7] > cooldown_s):
-                    last_trigger_time[7] = now
-                    print("Ring")
-                    select = Finger.RING
+                # prev_pinched_init_1 = pinched_ring
+                # status = f"PINCH_PX: {pinch_px_init_ring:.1f}"
+                
+                if pinched_middle and not prev_pinched_init_2 and (now - last_trigger_time[10] > cooldown_s):
+                        last_trigger_time[10] = now
+                        print("Middle")
+                        select = Finger.MIDDLE
 
-            prev_pinched_init_1 = pinched_ring
-            status = f"PINCH_PX: {pinch_px_init_ring:.1f}"
-            
-            if pinched_middle and not prev_pinched_init_2 and (now - last_trigger_time[10] > cooldown_s):
-                    last_trigger_time[10] = now
-                    print("Middle")
-                    select = Finger.MIDDLE
+                # prev_pinched_init_2 = pinched_middle
+                # status = f"PINCH_PX: {pinch_px_init_middle:.1f}"
 
-            prev_pinched_init_2 = pinched_middle
-            status = f"PINCH_PX: {pinch_px_init_middle:.1f}"
+                if pinched_index and not prev_pinched_init_3 and (now - last_trigger_time[13] > cooldown_s):
+                        last_trigger_time[13] = now
+                        print("Index")
+                        select = Finger.INDEX
 
-            if pinched_index and not prev_pinched_init_3 and (now - last_trigger_time[13] > cooldown_s):
-                    last_trigger_time[13] = now
-                    print("Index")
-                    select = Finger.INDEX
-
-            prev_pinched_init_3 = pinched_index
-            status = f"PINCH_PX: {pinch_px_init_index:.1f}"
+                # prev_pinched_init_3 = pinched_index
+                # status = f"PINCH_PX: {pinch_px_init_index:.1f}"
 
             cv2.putText(frame, status, (20, 40),
             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
@@ -251,6 +258,9 @@ def main():
 
             # cv2.line(frame, thumb_xy, index3_xy, (0, 255, 0), 2) # line: thumb to index3
             """
+
+            # INITIALIZE FINGER
+            # TK ADD RESET FUNCTION
             if select == Finger.PINKY:
                 show_circle = False
                 cv2.circle(frame, pinky0_xy, 5, (0, 0, 255), -1)
@@ -304,7 +314,7 @@ def main():
                         pinch_px_matra9, pinch_px_matra10, pinch_px_matra11, pinch_px_matra12,
                         pinch_px_matra13, pinch_px_matra14, pinch_px_matra15, pinch_px_matra16]
             
-            PINCH_ON = 60 
+            PINCH_ON = 20 
             PINCH_OFF = 90
             for i in range(len(prev_pinched)):
                 if prev_pinched[i]: 
