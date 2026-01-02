@@ -27,7 +27,7 @@ def main():
     landmarker = vision.HandLandmarker.create_from_options(options)
 
 
-    prev_pinched = False
+    prev_pinched_pinky0 = False
     last_trigger_time = 0.0
     cooldown_s = 0.12
 
@@ -57,8 +57,6 @@ def main():
             index = []
             fingers = [pinky, ring, middle, index]
 
-
-            #fingers[i][i]
             pinky0 = lm[17]
             pinky1 = lm[18]
             pinky2 = lm[19]
@@ -166,18 +164,18 @@ def main():
             PINCH_ON = 60
             PINCH_OFF = 90
 
-            if prev_pinched:
-                pinched  = pinch_px < PINCH_OFF
+            if prev_pinched_pinky0:
+                pinched  = pinch_px_matra1 < PINCH_OFF
             else:
-                pinched  = pinch_px < PINCH_ON
+                pinched  = pinch_px_matra1 < PINCH_ON
 
             now = time.time()
-            if pinched and not prev_pinched and (now - last_trigger_time > cooldown_s):
+            if pinched and not prev_pinched_pinky0 and (now - last_trigger_time > cooldown_s):
                 last_trigger_time = now
-                print("PINCH TRIGGER")
+                print("Matra 1 (Sam)")
 
-            prev_pinched = pinched
-            status = f"PINCH_PX: {pinch_px:.1f}"
+            prev_pinched_pinky0 = pinched
+            status = f"PINCH_PX: {pinch_px_matra1:.1f}"
 
         cv2.putText(frame, status, (20, 40),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
