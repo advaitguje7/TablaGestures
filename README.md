@@ -42,9 +42,9 @@ This project uses OpenCV to track 16 landmarks on the user's four fingers, utili
 Due to the complexity and anatomical issues of dealing with 16 landmarks at the same time, I split the landmarks into four, with four beats per finger. 
 
 To select a finger, simply touch your thumb to the corresponding fingertip, marked by a circle.
-<img width="795" height="638" alt="image" src="https://github.com/user-attachments/assets/6cc0fa3a-3754-43ad-8d30-14f57d43ed15" />
-<img width="794" height="627" alt="image" src="https://github.com/user-attachments/assets/3b02abda-896c-4908-87f2-5f1571f3f4f7" />
-<img width="798" height="637" alt="image" src="https://github.com/user-attachments/assets/3475f368-3ffb-43a9-b47c-f47a46db0c5b" />
+<img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/6cc0fa3a-3754-43ad-8d30-14f57d43ed15" />
+<img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/3b02abda-896c-4908-87f2-5f1571f3f4f7" />
+<img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/3475f368-3ffb-43a9-b47c-f47a46db0c5b" />
 
 ## Matra Select
 To select a matra, touch a landmark with the thumb. The corresponding bol will be displayed on the screen. 
@@ -59,7 +59,7 @@ To go to the next finger or change taal, one will need to reset to the Measure S
 
 ## Change Taal
 To change the tala, cross the index and middle finger such that the two fingertip landmarks intersect as shown below. 
-<img width="804" height="632" alt="image" src="https://github.com/user-attachments/assets/fe509860-500d-46a9-9184-0714560dde57" />
+<img width="804" height="632" alt="image" src="https://github.com/user-attachments/assets/fe509860-500d-46a9-9184-0714560dde57" /> <br>
 The talas cycle through the following list:
 Teentaal <br>
 Ektaal <br>
