@@ -41,13 +41,13 @@ This project uses OpenCV to track 16 landmarks on the user's four fingers, utili
 ## Measure Select
 Due to the complexity and anatomical issues of dealing with 16 landmarks at the same time, I split the landmarks into four, with four beats per finger. 
 
-To select a finger, simply touch your thumb to the corresponding fingertip, marked by a circle.
+To select a finger, simply touch your thumb to the corresponding fingertip, marked by a circle. <br>
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/6cc0fa3a-3754-43ad-8d30-14f57d43ed15" />
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/3b02abda-896c-4908-87f2-5f1571f3f4f7" />
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/3475f368-3ffb-43a9-b47c-f47a46db0c5b" />
 
 ## Matra Select
-To select a matra, touch a landmark with the thumb. The corresponding bol will be displayed on the screen. 
+To select a matra, touch a landmark with the thumb. The corresponding bol will be displayed on the screen. <br>
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/dbc24ca7-86f4-4637-ad89-754d1d72fadf" />
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/d3ab9f73-7c0b-4dd0-833c-f437f469bd01" />
 
@@ -58,7 +58,7 @@ To go to the next finger or change taal, one will need to reset to the Measure S
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/2692b3c0-3afd-463c-8467-d49220b7e9c0" />
 
 ## Change Taal
-To change the tala, cross the index and middle finger such that the two fingertip landmarks intersect as shown below. 
+To cycle through the talas, cross the index and middle finger such that the two fingertip landmarks intersect as shown below. <br>
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/fe509860-500d-46a9-9184-0714560dde57" /> <br>
 The talas cycle through the following list: <br>
 Teentaal <br>
