@@ -54,7 +54,7 @@ To select a matra, touch a landmark with the thumb. The corresponding bol will b
 
 ## Reset 
 To go to the next finger or change taal, one will need to reset to the Measure Select condition. To reset, simply curl your fingers, such that the fingertip-landmark intersects with the finger-base landmark as shown: <br>
-<img width="480" height="720" alt="image" src="https://github.com/user-attachments/assets/37490486-4eb4-4803-b6a2-ea61ccadb0e5" />
+<img width="797" height="634" alt="image" src="https://github.com/user-attachments/assets/14537fda-365e-463b-b842-da05e5bbfe87" />
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/2692b3c0-3afd-463c-8467-d49220b7e9c0" />
 
 ## Change Taal
