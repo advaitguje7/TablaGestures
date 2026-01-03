@@ -28,11 +28,11 @@ Dha Dhin Dhin Dha | Dha Dhin Dhin Dha | Dha Tin Tin Ta | Ta Dhin Dhin Dha
 
 In this project, the Thekas for 4 rhythm cycles have been implemented: Teentaal (16), Ektaal (12), Jhaptaal (10), and Rupak (7). An additional Carnatic talam, known as Adi Talam, is implemented as well. However, since the Carnatic system does not utilize the concept of Theka, a generally taught variation of AdiTalam is used.
 
-Some other terms:
-**Matra:** The beat number
-**Bol:** The verbal syllable corresponding to the drum stroke
-**Sam:** The first beat of a taal
-**Khali:** Literally, the empty/open beat of the taal 
+Some other terms:<br>
+**Matra:** The beat number<br>
+**Bol:** The verbal syllable corresponding to the drum stroke<br>
+**Sam:** The first beat of a taal<br>
+**Khali:** Literally, the empty/open beat of the taal <br>
 
 #  Understanding the Implementation
 
