@@ -1,5 +1,51 @@
 # TablaGestures
-Count through a tala on your hands
+This project lets one count through a tala on their hands using OpenCV. 
+
+# Tala Overview and Introduction of Terms
+A **taal / tala** is a rhythm cycle in Indian Classical Music, at its simplest definition. Analagous to Western time signatures, a taal is a standardized division of beats that allows musicians to communicate ideas efficiently. This project applies the Hindustani (North Indian) Tala framework, which differs to the Carnatic (South Indian) framework in certain fundamental areas, namely, the concept of Theka.
+
+A **Theka** is a fixed cycle of syllables in Hindustani music. For example, the 16 beat rhythm cycle known as 'TeenTaal' is as follows:
+Dha Dhin Dhin Dha | Dha Dhin Dhin Dha | Dha Tin Tin Ta | Ta Dhin Dhin Dha
+
+In this project, the Thekas for 4 rhythm cycles have been implemented: Teentaal (16), Ektaal (12), Jhaptaal (10), and Rupak (7). An additional Carnatic talam, known as Adi Talam, is implemented as well. However, since the Carnatic system does not utilize the concept of Theka, a generally taught variation of AdiTalam is used.
+
+Some other terms:
+**Matra:** The beat number
+**Bol:** The verbal syllable corresponding to the drum stroke
+**Sam:** The first beat of a taal
+**Khali:** Literally, the empty/open beat of the taal 
+
+#  Understanding the Implementation
+
+This project uses OpenCV to track 16 landmarks on the user's four fingers, utilizing the thumb as a selector. Placing the thumb on one of these landmarks will display the distance between the thumb and landmark (pinch_px), the taal, and the bol at that specific landmark. There are four general gestures: measure select, matra select, reset, change taal.
+
+## Measure Select
+Due to the complexity and anatomical issues of dealing with 16 landmarks at the same time, I split the landmarks into four, with four beats per finger. 
+
+To select a finger, simply touch your thumb to the corresponding fingertip, marked by a circle.
+<img width="795" height="638" alt="image" src="https://github.com/user-attachments/assets/6cc0fa3a-3754-43ad-8d30-14f57d43ed15" />
+<img width="794" height="627" alt="image" src="https://github.com/user-attachments/assets/3b02abda-896c-4908-87f2-5f1571f3f4f7" />
+<img width="798" height="637" alt="image" src="https://github.com/user-attachments/assets/3475f368-3ffb-43a9-b47c-f47a46db0c5b" />
+
+## Matra Select
+To select a matra, touch a landmark with the thumb. The corresponding bol will be displayed on the screen. 
+<img width="798" height="634" alt="image" src="https://github.com/user-attachments/assets/dbc24ca7-86f4-4637-ad89-754d1d72fadf" />
+<img width="794" height="634" alt="image" src="https://github.com/user-attachments/assets/d3ab9f73-7c0b-4dd0-833c-f437f469bd01" />
+
+
+## Reset 
+To go to the next finger or change taal, one will need to reset to the Measure Select condition. To reset, simply curl your fingers, such that the fingertip-landmark intersects with the finger-base landmark as shown:
+<img width="794" height="475" alt="image" src="https://github.com/user-attachments/assets/37490486-4eb4-4803-b6a2-ea61ccadb0e5" />
+
+## Change Taal
+To change the tala, cross the index and middle finger such that the two fingertip landmarks intersect as shown below. The talas cycle through the following list:
+Teentaal
+Ektaal
+Jhaptaal
+Rupak
+AdiTalam
+<img width="804" height="632" alt="image" src="https://github.com/user-attachments/assets/fe509860-500d-46a9-9184-0714560dde57" />
+
 
 ## Quickstart
 
