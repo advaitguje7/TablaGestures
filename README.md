@@ -2,7 +2,7 @@
 
 A real-time computer vision system that allows a user to count through Indian classical rhythm cycles (taals) on their hand using thumb–finger gestures.
 
-The system maps thumb pinches to discrete beats (matras), displays the corresponding bol, and supports gesture-based tala switching.
+The system maps thumb pinches to discrete beats (matras), displays the corresponding bol, and supports gesture-based tala switching through MediaPipe and OpenCV.
 
 ## Quickstart
 
@@ -36,7 +36,7 @@ Some other terms:<br>
 
 #  Understanding the Implementation
 
-This project uses OpenCV to track 16 landmarks on the user's four fingers, utilizing the thumb as a selector. Placing the thumb on one of these landmarks will display the distance between the thumb and landmark (pinch_px), the taal, and the bol at that specific landmark. There are four general gestures: measure select, matra select, reset, change taal. To exit the program, hit Esc.
+This project uses MediaPipe in OpenCV to track 16 landmarks on the user's four fingers, utilizing the thumb as a selector. Placing the thumb on one of these landmarks will display the distance between the thumb and landmark (pinch_px), the taal, and the bol at that specific landmark. There are four general gestures: measure select, matra select, reset, change taal. To exit the program, hit Esc.
 
 ## Measure Select
 Due to the complexity and anatomical issues of dealing with 16 landmarks at the same time, I split the landmarks into four, with four beats per finger. 
@@ -66,6 +66,12 @@ Ektaal <br>
 Jhaptaal <br>
 Rupak <br>
 AdiTalam <br>
+
+## Feature Demo
+
+https://github.com/user-attachments/assets/8d65942c-c965-4f4d-ac65-787640e0dca8
+
+
 
 ## Implementation Notes
 
