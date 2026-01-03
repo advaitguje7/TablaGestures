@@ -6,7 +6,21 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 from enum import Enum
 
-MODEL_PATH = "models/hand_landmarker.task"
+import os
+from pathlib import Path
+
+# 1. SETUP PATHS DYNAMICALLY
+# This finds the folder where THIS script is saved
+SRC_DIR = Path(__file__).parent.resolve()
+
+# This points to: [your_script_folder]/models/hand_landmarker.task
+MODEL_PATH = str(SRC_DIR.parent / "models" / "hand_landmarker.task")
+# Verify the file actually exists before starting MediaPipe
+if not os.path.exists(MODEL_PATH):
+    print(f"ERROR: Model file not found at {MODEL_PATH}")
+    print("Check if the 'models' folder exists and contains the .task file.")
+    exit()
+
 
 # TO-DO
 # Add dynamic list for multiple talas
@@ -93,7 +107,7 @@ def main():
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
         result = landmarker.detect(mp_image)
 
-        status = "NO HAND"
+        status = "--"
         
 
         if result.hand_landmarks:
