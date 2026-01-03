@@ -9,22 +9,15 @@ from enum import Enum
 import os
 from pathlib import Path
 
-# 1. SETUP PATHS DYNAMICALLY
-# This finds the folder where THIS script is saved
 SRC_DIR = Path(__file__).parent.resolve()
 
-# This points to: [your_script_folder]/models/hand_landmarker.task
 MODEL_PATH = str(SRC_DIR.parent / "models" / "hand_landmarker.task")
-# Verify the file actually exists before starting MediaPipe
+
 if not os.path.exists(MODEL_PATH):
     print(f"ERROR: Model file not found at {MODEL_PATH}")
     print("Check if the 'models' folder exists and contains the .task file.")
     exit()
 
-
-# TO-DO
-# Add dynamic list for multiple talas
-# make display better
 def dist_3d(p1, p2, w, h):
     # Convert normalized MediaPipe coordinates to pixel/scale space
     dx = (p1.x - p2.x) * w
@@ -164,32 +157,26 @@ def main():
                     last_trigger_time[3] = now
                     print("Pinky")
                     select = Finger.PINKY
-            # prev_pinched_init_0 = pinched_pinky
                     status = f"PINCH_PX: {pinch_px_init_pinky:.1f}"
 
                 if pinched_ring and not prev_pinched_init_1 and (now - last_trigger_time[7] > cooldown_s):
                     last_trigger_time[7] = now
                     print("Ring")
                     select = Finger.RING
-                    # prev_pinched_init_1 = pinched_ring
                     status = f"PINCH_PX: {pinch_px_init_ring:.1f}"
                 
                 if pinched_middle and not prev_pinched_init_2 and (now - last_trigger_time[10] > cooldown_s):
                     last_trigger_time[10] = now
                     print("Middle")
                     select = Finger.MIDDLE
-                # prev_pinched_init_2 = pinched_middle
                     status = f"PINCH_PX: {pinch_px_init_middle:.1f}"
 
                 if pinched_index and not prev_pinched_init_3 and (now - last_trigger_time[13] > cooldown_s):
                     last_trigger_time[13] = now
                     print("Index")
                     select = Finger.INDEX
-                    # prev_pinched_init_3 = pinched_index
                     status = f"PINCH_PX: {pinch_px_init_index:.1f}"
                 
-                # pinch_px_reset_check0 = dist_3d(pinky3, ring3, w, h)
-                # pinch_px_reset_check1 = dist_3d(ring3, middle3, w, h)
                 pinch_px_reset_check = dist_3d(middle3, index3, w, h)
 
                 taal_iteration_condition = (pinch_px_reset_check < 10) 
@@ -200,6 +187,7 @@ def main():
                     if TalaIndex >= len(TalasList): 
                           TalaIndex = 0
                     Taal = TalasDict[TalasList[TalaIndex]] 
+                    
             ############### CONDITIONAL #####################################
             pinch_px = []
             offset = 0
@@ -214,7 +202,6 @@ def main():
                 # pinky landmarks
                 pinky0 = lm[17]
                 pinky1 = lm[18]
-                # pinky0_cxy = (int(((pinky0.x + pinky1.x) / 2) * w), int(((pinky0.y + pinky1.y) / 2) * h))
                 pinky2 = lm[19]
 
                 # pinky_xy
@@ -268,7 +255,6 @@ def main():
                 cv2.line(frame, ring0_xy, ring1_xy, (255, 255, 255), 1) 
                 cv2.line(frame, ring1_xy, ring2_xy, (255, 255, 255), 1) 
                 cv2.line(frame, ring2_xy, ring3_xy, (255, 255, 255), 1) 
-                # cv2.line(frame, thumb_xy, ring3_xy, (0, 0, 0), 2) 
 
                 # ring matras
                 pinch_px_matra5 = dist_3d(thumb, ring0, w, h)
@@ -306,7 +292,6 @@ def main():
                 cv2.line(frame, middle0_xy, middle1_xy, (255, 255, 255), 1) 
                 cv2.line(frame, middle1_xy, middle2_xy, (255, 255, 255), 1) 
                 cv2.line(frame, middle2_xy, middle3_xy, (255, 255, 255), 1) 
-                # cv2.line(frame, thumb_xy, middle3_xy, (0, 0, 0), 2) 
 
                 # middle matras
                 pinch_px_matra9 = dist_3d(thumb, middle0, w, h)
@@ -346,7 +331,6 @@ def main():
                 cv2.line(frame, index0_xy, index1_xy, (255, 255, 255), 1) 
                 cv2.line(frame, index1_xy, index2_xy, (255, 255, 255), 1)
                 cv2.line(frame, index2_xy, index3_xy, (255, 255, 255), 1) 
-                # cv2.line(frame, thumb_xy, index3_xy, (0, 0, 0), 2) 
 
                 # index matras
                 pinch_px_matra13 = dist_3d(thumb, index0, w, h)
@@ -370,9 +354,6 @@ def main():
                  best = min(pinch_px)
             else:
                  best = 0
-
-            # PINCH_ON = 30
-            # PINCH_OFF = 60
             
             for i in range(len(pinch_px)):
                 idx = offset + i
@@ -405,7 +386,7 @@ def main():
         cv2.putText(frame, bol, (20, 120),
         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
         
-        cv2.imshow("Hand V1 (new API)", frame)
+        cv2.imshow("TablaGesture", frame)
         if cv2.waitKey(1) & 0xFF == 27:
             break
 
