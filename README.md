@@ -54,13 +54,13 @@ To select a matra, touch a landmark with the thumb. The corresponding bol will b
 
 ## Reset 
 To go to the next finger or change taal, one will need to reset to the Measure Select condition. To reset, simply curl your fingers, such that the fingertip-landmark intersects with the finger-base landmark as shown: <br>
-<img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/37490486-4eb4-4803-b6a2-ea61ccadb0e5" />
+<img width="480" height="720" alt="image" src="https://github.com/user-attachments/assets/37490486-4eb4-4803-b6a2-ea61ccadb0e5" />
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/2692b3c0-3afd-463c-8467-d49220b7e9c0" />
 
 ## Change Taal
 To change the tala, cross the index and middle finger such that the two fingertip landmarks intersect as shown below. 
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/fe509860-500d-46a9-9184-0714560dde57" /> <br>
-The talas cycle through the following list:
+The talas cycle through the following list: <br>
 Teentaal <br>
 Ektaal <br>
 Jhaptaal <br>
