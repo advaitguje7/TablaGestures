@@ -44,6 +44,9 @@ def main():
     last_trigger_time = [0.0] * 16
     cooldown_s = 0.5
 
+    last_tala_change = 0.0
+    TALA_COOLDOWN_S = 0.75   
+
     class Finger(Enum):
                  MISSING = -1
                  PINKY = 0
@@ -70,12 +73,12 @@ def main():
     AdiTalam = ['Tha', 'Ka', 'Dhi', 'Mi', 'Tha', 'Ka', 'Jhu', 'Nu']
     AdiTalam += ['Null'] * 8
 
-    TalasDict = {"Teeltaal": Teentaal, "Ektaal": Ektaal, "Jhaptaal": Jhaptaal, "Rupak": Rupak, "AdiTalam": AdiTalam}
-    TalasList = ["Teentaal", "Ektaal", "Jhaptaal", "Rupak", "AdiTalam"]
+    TalasDict = {"Teentaal (16)": Teentaal, "Ektaal (12)": Ektaal, "Jhaptaal (10)": Jhaptaal, "Rupak (7)": Rupak, "AdiTalam (8)": AdiTalam}
+    TalasList = ["Teentaal (16)", "Ektaal (12)", "Jhaptaal (10)", "Rupak (7)", "AdiTalam (8)"]
     TalaIndex = 0
     
 
-    Taal_Chosen = 'Ektaal'
+    Taal_Chosen = 'Teentaal (16)'
     Taal = TalasDict[Taal_Chosen]
     
     bol = "--"
@@ -171,18 +174,18 @@ def main():
                     # prev_pinched_init_3 = pinched_index
                     status = f"PINCH_PX: {pinch_px_init_index:.1f}"
                 
-                pinch_px_reset_check0 = dist_3d(pinky3, ring3, w, h)
-                pinch_px_reset_check1 = dist_3d(ring3, middle3, w, h)
-                pinch_px_reset_check2 = dist_3d(middle3, index3, w, h)
-                pinch_px_reset_check3 = dist_3d(index3, thumb, w, h)
-                pinch_px_reset_check4 = dist_3d(thumb, pinky3, w, h)
+                # pinch_px_reset_check0 = dist_3d(pinky3, ring3, w, h)
+                # pinch_px_reset_check1 = dist_3d(ring3, middle3, w, h)
+                pinch_px_reset_check = dist_3d(middle3, index3, w, h)
 
-                if ( (pinch_px_reset_check0 < 10) & (pinch_px_reset_check1 < 10) & (pinch_px_reset_check2 < 10) 
-                    & (pinch_px_reset_check3 < 10) & (pinch_px_reset_check4 < 10) ):
-                     TalaIndex += 1
-                     if TalaIndex == len(TalasList): 
+                taal_iteration_condition = (pinch_px_reset_check < 10) 
+                now = time.time()
+                if (taal_iteration_condition) and (now - last_tala_change > TALA_COOLDOWN_S):
+                    last_tala_change = now
+                    TalaIndex += 1
+                    if TalaIndex >= len(TalasList): 
                           TalaIndex = 0
-
+                    Taal = TalasDict[TalasList[TalaIndex]] 
             ############### CONDITIONAL #####################################
             pinch_px = []
             offset = 0
@@ -378,13 +381,11 @@ def main():
 
                 prev_pinched[idx] = pinched
                 status = f"PINCH_PX: {pinch_px[i]:.1f}"
-               
-            
 
         cv2.putText(frame, status, (20, 40),
         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
 
-        cv2.putText(frame, f"Tala: {TalasDict[TalasList[TalaIndex]]}", (20, 80),
+        cv2.putText(frame, f"Tala: {TalasList[TalaIndex]}", (20, 80),
         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
 
         cv2.putText(frame, bol, (20, 120),
