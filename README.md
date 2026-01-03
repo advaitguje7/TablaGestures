@@ -4,7 +4,7 @@ This project lets one count through a tala on their hands using OpenCV.
 # Tala Overview and Introduction of Terms
 A **taal / tala** is a rhythm cycle in Indian Classical Music, at its simplest definition. Analagous to Western time signatures, a taal is a standardized division of beats that allows musicians to communicate ideas efficiently. This project applies the Hindustani (North Indian) Tala framework, which differs to the Carnatic (South Indian) framework in certain fundamental areas, namely, the concept of Theka.
 
-A **Theka** is a fixed cycle of syllables in Hindustani music. For example, the 16 beat rhythm cycle known as 'TeenTaal' is as follows:
+A **Theka** is a fixed cycle of syllables in Hindustani music. For example, the 16 beat rhythm cycle known as 'TeenTaal' is as follows: <br>
 Dha Dhin Dhin Dha | Dha Dhin Dhin Dha | Dha Tin Tin Ta | Ta Dhin Dhin Dha
 
 In this project, the Thekas for 4 rhythm cycles have been implemented: Teentaal (16), Ektaal (12), Jhaptaal (10), and Rupak (7). An additional Carnatic talam, known as Adi Talam, is implemented as well. However, since the Carnatic system does not utilize the concept of Theka, a generally taught variation of AdiTalam is used.
@@ -39,11 +39,11 @@ To go to the next finger or change taal, one will need to reset to the Measure S
 
 ## Change Taal
 To change the tala, cross the index and middle finger such that the two fingertip landmarks intersect as shown below. The talas cycle through the following list:
-Teentaal
-Ektaal
-Jhaptaal
-Rupak
-AdiTalam
+Teentaal <br>
+Ektaal <br>
+Jhaptaal <br>
+Rupak <br>
+AdiTalam <br>
 <img width="804" height="632" alt="image" src="https://github.com/user-attachments/assets/fe509860-500d-46a9-9184-0714560dde57" />
 
 
