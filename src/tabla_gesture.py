@@ -63,6 +63,8 @@ def main():
 
     select = Finger.MISSING
 
+    # Talas
+
     Teentaal = ['Dha', 'Dhin', 'Dhin', 'Dha', 
             'Dha', 'Dhin', 'Dhin', 'Dha',
             'Dha', 'Tin', 'Tin', 'Ta',
@@ -84,8 +86,7 @@ def main():
     TalasList = ["Teentaal (16)", "Ektaal (12)", "Jhaptaal (10)", "Rupak (7)", "AdiTalam (8)"]
     TalaIndex = 0
     
-
-    Taal_Chosen = 'Teentaal (16)'
+    Taal_Chosen = 'Teentaal (16)' # initial
     Taal = TalasDict[Taal_Chosen]
     
     bol = "--"
@@ -127,9 +128,9 @@ def main():
             wrist = lm[0]
             mid_mcp = lm[9]
 
-            s = dist_3d(wrist, mid_mcp, w, h)   # hand scale in pixels-ish
-            PINCH_ON  = 0.30 * s
-            PINCH_OFF = 0.45 * s
+            s = dist_3d(wrist, mid_mcp, w, h)   
+            PINCH_ON  = 0.35 * s
+            PINCH_OFF = 0.50 * s
 
             cv2.circle(frame, thumb_xy, 5, (255, 0, 255), -1)
 
