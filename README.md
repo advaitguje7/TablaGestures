@@ -20,26 +20,26 @@ pip install -r requirements.txt
 python src/tabla_gesture.py
 ```
 
-# Tala Overview and Introduction of Terms
-A **taal / tala** is a rhythm cycle in Indian Classical Music, at its simplest definition. Analogous to Western time signatures, a taal is a standardized division of beats that allows musicians to communicate ideas efficiently. This project applies the Hindustani (North Indian) Tala framework, which differs to the Carnatic (South Indian) framework in certain fundamental areas, namely, the concept of Theka.
+# Overview and Introduction of Terms
+A **taal / tala**, at its simplest definition, is a rhythm cycle in Indian Classical Music. Analogous to Western time signatures, a taal is a standardized division of beats that allows musicians to communicate ideas efficiently. This project applies the Hindustani (North Indian) Tala framework, allowing the user to see the _Theka_ associated with a particular rhythm cycle. 
 
 A **Theka** is a fixed cycle of syllables in Hindustani music. For example, the 16 beat rhythm cycle known as 'TeenTaal' is as follows: <br>
 Dha Dhin Dhin Dha | Dha Dhin Dhin Dha | Dha Tin Tin Ta | Ta Dhin Dhin Dha
 
-In this project, the Thekas for 4 rhythm cycles have been implemented: Teentaal (16), Ektaal (12), Jhaptaal (10), and Rupak (7). An additional Carnatic talam, known as Adi Talam, is implemented as well. However, since the Carnatic system does not utilize the concept of Theka, a generally taught variation of AdiTalam is used.
+In this project, each individual syllable is divided across the user's hand, allowing one to visualize each beat number and the corresponding _bol_. The thekas for 4 rhythm cycles have been implemented: Teentaal (16), Ektaal (12), Jhaptaal (10), and Rupak (7). An additional Carnatic talam, known as Adi Talam, is implemented as well. However, since the Carnatic system does not utilize the concept of Theka, a generally taught variation of AdiTalam is used.
 
-Some other terms:<br>
+Definitions:<br>
 **Matra:** The beat number<br>
 **Bol:** The verbal syllable corresponding to the drum stroke<br>
 **Sam:** The first beat of a taal<br>
-**Khali:** Literally, the empty/open beat of the taal <br>
+**Khali:** The empty/open beat of the taal <br>
 
 #  Understanding the Implementation
 
 This project uses MediaPipe in OpenCV to track 16 landmarks on the user's four fingers, utilizing the thumb as a selector. Placing the thumb on one of these landmarks will display the distance between the thumb and landmark (pinch_px), the taal, and the bol at that specific landmark. There are four general gestures: measure select, matra select, reset, change taal. To exit the program, hit Esc.
 
 ## Measure Select
-Due to the complexity and anatomical issues of dealing with 16 landmarks at the same time, I split the landmarks into four, with four beats per finger. 
+Due to the complexity and anatomical issues of dealing with 16 landmarks at the same time, I split the landmarks into four sections, with four beats per finger. 
 
 To select a finger, simply touch your thumb to the corresponding fingertip, marked by a circle. <br>
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/6cc0fa3a-3754-43ad-8d30-14f57d43ed15" />
@@ -53,7 +53,7 @@ To select a matra, touch a landmark with the thumb. The corresponding bol will b
 
 
 ## Reset 
-To go to the next finger or change taal, one will need to reset to the Measure Select condition. To reset, simply curl your fingers, such that the fingertip-landmark intersects with the finger-base landmark as shown: <br>
+To go to the next finger or change taal, you will need to reset to the Measure Select condition. To reset, simply curl your fingers, such that the fingertip-landmark intersects with the finger-base landmark as shown: <br>
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/14537fda-365e-463b-b842-da05e5bbfe87" />
 <img width="480" height="520" alt="image" src="https://github.com/user-attachments/assets/2692b3c0-3afd-463c-8467-d49220b7e9c0" />
 
