@@ -19,7 +19,6 @@ if not os.path.exists(MODEL_PATH):
     exit()
 
 def dist_3d(p1, p2, w, h):
-    # Convert normalized MediaPipe coordinates to pixel/scale space
     dx = (p1.x - p2.x) * w
     dy = (p1.y - p2.y) * h
     dz = (p1.z - p2.z) * w
@@ -34,9 +33,9 @@ def main():
     options = vision.HandLandmarkerOptions(
         base_options=base_options,
         num_hands=1,
-        min_hand_detection_confidence=0.6,
-        min_hand_presence_confidence=0.6,
-        min_tracking_confidence=0.6,
+        min_hand_detection_confidence=0.8,
+        min_hand_presence_confidence=0.8,
+        min_tracking_confidence=0.8,
     )
 
     landmarker = vision.HandLandmarker.create_from_options(options)
@@ -110,7 +109,18 @@ def main():
             # MediaPipe landmark indices
             
             thumb = lm[4]
+            
+            class Thumb2:
+                def __init__(self, thumb):
+                    self.x = thumb.x
+                    self.y = thumb.y - 0.02
+                    self.z = thumb.z
+            
+            thumb2 = Thumb2(thumb)
+
+
             thumb_xy = (int(thumb.x * w), int(thumb.y * h))
+            thumb2_xy = (int((thumb2.x)* w), int((thumb2.y)* h))
 
             ########## INITIAL #################### 
             pinky3 = lm[20]
@@ -128,24 +138,28 @@ def main():
             wrist = lm[0]
             mid_mcp = lm[9]
 
-            s = dist_3d(wrist, mid_mcp, w, h)   
-            PINCH_ON  = 0.35 * s
-            PINCH_OFF = 0.50 * s
+            s_dist = dist_3d(wrist, mid_mcp, w, h)   
+            PINCH_ON  = s_dist * 0.30
+            PINCH_OFF = s_dist * 0.80
 
-            cv2.circle(frame, thumb_xy, 5, (255, 0, 255), -1)
+            print(s_dist, " pixels") # 115
+
+            rad = int(s_dist / 23)
+
+            cv2.circle(frame, thumb2_xy, rad, (255, 0, 255), -1)
 
             show_circle = True
 
             if show_circle & (select == Finger.MISSING):
-                cv2.circle(frame, pinky3_xy, 5, (0, 0, 255), -1)
-                cv2.circle(frame, ring3_xy, 5, (0, 255, 255), -1)
-                cv2.circle(frame, middle3_xy, 5, (0, 255, 0), -1)
-                cv2.circle(frame, index3_xy, 5, (255, 0, 0), -1)
+                cv2.circle(frame, pinky3_xy, rad, (0, 0, 255), -1)
+                cv2.circle(frame, ring3_xy, rad, (0, 255, 255), -1)
+                cv2.circle(frame, middle3_xy, rad, (0, 255, 0), -1)
+                cv2.circle(frame, index3_xy, rad, (255, 0, 0), -1)
 
-            pinch_px_init_pinky = dist_3d(thumb, pinky3, w, h)
-            pinch_px_init_ring = dist_3d(thumb, ring3, w, h)
-            pinch_px_init_middle = dist_3d(thumb, middle3, w, h)
-            pinch_px_init_index = dist_3d(thumb, index3, w, h)
+            pinch_px_init_pinky = dist_3d(thumb2, pinky3, w, h)
+            pinch_px_init_ring = dist_3d(thumb2, ring3, w, h)
+            pinch_px_init_middle = dist_3d(thumb2, middle3, w, h)
+            pinch_px_init_index = dist_3d(thumb2, index3, w, h)
 
             pinched_pinky  = pinch_px_init_pinky < 20
             pinched_ring = pinch_px_init_ring < 20
@@ -154,7 +168,7 @@ def main():
         
             now = time.time()
             if select == Finger.MISSING:
-                if pinched_pinky and not prev_pinched_init_0 and (now - last_trigger_time[3] > cooldown_s):
+                if (pinched_pinky == True) and (prev_pinched_init_0 == False) and (now - last_trigger_time[3] > cooldown_s):
                     last_trigger_time[3] = now
                     print("Pinky")
                     select = Finger.PINKY
@@ -197,24 +211,31 @@ def main():
             reset_dist_middle = 100.0
             reset_dist_index = 100.0
 
+            class virtualDigit:
+                    def __init__(self, finger):
+                        self.x = finger.x
+                        self.y = finger.y + 0.05
+                        self.z = finger.z
+
             if select == Finger.PINKY:
                 show_circle = False
                 
                 # pinky landmarks
                 pinky0 = lm[17]
+                pinky0_virt = virtualDigit(pinky0)
                 pinky1 = lm[18]
                 pinky2 = lm[19]
-
+                
                 # pinky_xy
                 pinky0_xy = (int(pinky0.x * w), int(pinky0.y * h))
                 pinky1_xy = (int(pinky1.x * w), int(pinky1.y * h))
                 pinky2_xy = (int(pinky2.x * w), int(pinky2.y * h))
                 
                 # pinky circles
-                cv2.circle(frame, pinky0_xy, 5, (0, 0, 255), -1)
-                cv2.circle(frame, pinky1_xy, 5, (0, 0, 255), -1)
-                cv2.circle(frame, pinky2_xy, 5, (0, 0, 255), -1)
-                cv2.circle(frame, pinky3_xy, 5, (0, 0, 255), -1)
+                cv2.circle(frame, pinky0_xy, rad, (0, 0, 255), -1)
+                cv2.circle(frame, pinky1_xy, rad, (0, 0, 255), -1)
+                cv2.circle(frame, pinky2_xy, rad, (0, 0, 255), -1)
+                cv2.circle(frame, pinky3_xy, rad, (0, 0, 255), -1)
 
                 #pinky lines
                 cv2.line(frame, pinky0_xy, pinky1_xy, (255, 255, 255), 1)
@@ -222,10 +243,10 @@ def main():
                 cv2.line(frame, pinky2_xy, pinky3_xy, (255, 255, 255), 1) 
 
                 # pinky matras
-                pinch_px_matra1 = dist_3d(thumb, pinky0, w, h)
-                pinch_px_matra2 = dist_3d(thumb, pinky1, w, h)
-                pinch_px_matra3 = dist_3d(thumb, pinky2, w, h)
-                pinch_px_matra4 = dist_3d(thumb, pinky3, w, h)
+                pinch_px_matra1 = dist_3d(thumb2, pinky0_virt, w, h)
+                pinch_px_matra2 = dist_3d(thumb2, pinky1, w, h)
+                pinch_px_matra3 = dist_3d(thumb2, pinky2, w, h)
+                pinch_px_matra4 = dist_3d(thumb2, pinky3, w, h)
 
                 pinch_px = [pinch_px_matra1, pinch_px_matra2, pinch_px_matra3, pinch_px_matra4]
 
@@ -238,6 +259,7 @@ def main():
                 # ring landmarks
                 ring0 = lm[13]
                 ring1 = lm[14]
+                ring_virt = virtualDigit(ring0)
                 ring0_cxy = (int(((ring0.x + ring1.x) / 2) * w),int(((ring0.y + ring1.y) / 2) * h))
                 ring2 = lm[15]
 
@@ -247,10 +269,10 @@ def main():
                 ring2_xy = (int(ring2.x * w), int(ring2.y * h))
                 
                 # ring circles
-                cv2.circle(frame, ring0_xy, 5, (0, 255, 255), -1)
-                cv2.circle(frame, ring1_xy, 5, (0, 255, 255), -1)
-                cv2.circle(frame, ring2_xy, 5, (0, 255, 255), -1)
-                cv2.circle(frame, ring3_xy, 5, (0, 255, 255), -1)
+                cv2.circle(frame, ring0_xy, rad, (0, 255, 255), -1)
+                cv2.circle(frame, ring1_xy, rad, (0, 255, 255), -1)
+                cv2.circle(frame, ring2_xy, rad, (0, 255, 255), -1)
+                cv2.circle(frame, ring3_xy, rad, (0, 255, 255), -1)
 
                 # ring lines
                 cv2.line(frame, ring0_xy, ring1_xy, (255, 255, 255), 1) 
@@ -258,10 +280,10 @@ def main():
                 cv2.line(frame, ring2_xy, ring3_xy, (255, 255, 255), 1) 
 
                 # ring matras
-                pinch_px_matra5 = dist_3d(thumb, ring0, w, h)
-                pinch_px_matra6 = dist_3d(thumb, ring1, w, h)
-                pinch_px_matra7 = dist_3d(thumb, ring2, w, h)
-                pinch_px_matra8 = dist_3d(thumb, ring3, w, h)
+                pinch_px_matra5 = dist_3d(thumb2, ring0, w, h)
+                pinch_px_matra6 = dist_3d(thumb2, ring1, w, h)
+                pinch_px_matra7 = dist_3d(thumb2, ring2, w, h)
+                pinch_px_matra8 = dist_3d(thumb2, ring3, w, h)
 
                 pinch_px = [pinch_px_matra5, pinch_px_matra6, pinch_px_matra7, pinch_px_matra8]
 
@@ -275,6 +297,7 @@ def main():
                 # middle landmarks
                 middle0 = lm[9]
                 middle1 = lm[10]
+                middle0_virt = virtualDigit(middle0)
                 middle0_cxy = (int(((middle0.x + middle1.x) / 2) * w), int(((middle0.y + middle1.y) / 2) * h))
                 middle2 = lm[11]
 
@@ -284,10 +307,10 @@ def main():
                 middle2_xy = (int(middle2.x * w), int(middle2.y * h))
 
                 # middle circles
-                cv2.circle(frame, middle0_xy, 5, (0, 255, 0), -1)
-                cv2.circle(frame, middle1_xy, 5, (0, 255, 0), -1)
-                cv2.circle(frame, middle2_xy, 5, (0, 255, 0), -1)
-                cv2.circle(frame, middle3_xy, 5, (0, 255, 0), -1)
+                cv2.circle(frame, middle0_xy, rad, (0, 255, 0), -1)
+                cv2.circle(frame, middle1_xy, rad, (0, 255, 0), -1)
+                cv2.circle(frame, middle2_xy, rad, (0, 255, 0), -1)
+                cv2.circle(frame, middle3_xy, rad, (0, 255, 0), -1)
 
                 # middle lines
                 cv2.line(frame, middle0_xy, middle1_xy, (255, 255, 255), 1) 
@@ -295,10 +318,10 @@ def main():
                 cv2.line(frame, middle2_xy, middle3_xy, (255, 255, 255), 1) 
 
                 # middle matras
-                pinch_px_matra9 = dist_3d(thumb, middle0, w, h)
-                pinch_px_matra10 = dist_3d(thumb, middle1, w, h)
-                pinch_px_matra11 = dist_3d(thumb, middle2, w, h)
-                pinch_px_matra12 = dist_3d(thumb, middle3, w, h)
+                pinch_px_matra9 = dist_3d(thumb2, middle0, w, h)
+                pinch_px_matra10 = dist_3d(thumb2, middle1, w, h)
+                pinch_px_matra11 = dist_3d(thumb2, middle2, w, h)
+                pinch_px_matra12 = dist_3d(thumb2, middle3, w, h)
 
                 pinch_px = [pinch_px_matra9, pinch_px_matra10, pinch_px_matra11, pinch_px_matra12]
 
@@ -312,6 +335,7 @@ def main():
                 #index landmarks
                 index0 = lm[5]
                 index1 = lm[6]
+                index0_virt = virtualDigit(index0)
                 index0_cxy = (int(((index0.x + index1.x) / 2) * w), int(((index0.y + index1.y) / 2) * h))
                 index2 = lm[7]
                 index3 = lm[8]
@@ -323,10 +347,10 @@ def main():
                 index3_xy = (int(index3.x * w), int(index3.y * h))
 
                 #index circles
-                cv2.circle(frame, index0_xy, 5, (255, 0, 0), -1)
-                cv2.circle(frame, index1_xy, 5, (255, 0, 0), -1)
-                cv2.circle(frame, index2_xy, 5, (255, 0, 0), -1)
-                cv2.circle(frame, index3_xy, 5, (255, 0, 0), -1)    
+                cv2.circle(frame, index0_cxy, rad, (255, 0, 0), -1)
+                cv2.circle(frame, index1_xy, rad, (255, 0, 0), -1)
+                cv2.circle(frame, index2_xy, rad, (255, 0, 0), -1)
+                cv2.circle(frame, index3_xy, rad, (255, 0, 0), -1)    
 
                 # index lines
                 cv2.line(frame, index0_xy, index1_xy, (255, 255, 255), 1) 
@@ -334,10 +358,10 @@ def main():
                 cv2.line(frame, index2_xy, index3_xy, (255, 255, 255), 1) 
 
                 # index matras
-                pinch_px_matra13 = dist_3d(thumb, index0, w, h)
-                pinch_px_matra14 = dist_3d(thumb, index1, w, h)
-                pinch_px_matra15 = dist_3d(thumb, index2, w, h)
-                pinch_px_matra16 = dist_3d(thumb, index3, w, h)    
+                pinch_px_matra13 = dist_3d(thumb2, index0, w, h)
+                pinch_px_matra14 = dist_3d(thumb2, index1, w, h)
+                pinch_px_matra15 = dist_3d(thumb2, index2, w, h)
+                pinch_px_matra16 = dist_3d(thumb2, index3, w, h)    
 
                 pinch_px = [pinch_px_matra13, pinch_px_matra14, pinch_px_matra15, pinch_px_matra16]
 
@@ -359,12 +383,12 @@ def main():
             for i in range(len(pinch_px)):
                 idx = offset + i
                 if (prev_pinched[idx] == True):  
-                    pinched = pinch_px[i] < PINCH_OFF and (pinch_px[i] == best)
+                    pinched = (pinch_px[i] < PINCH_OFF) and (pinch_px[i] == best)
                 else: 
-                     pinched = pinch_px[i] < PINCH_ON and (pinch_px[i] == best)
+                     pinched = (pinch_px[i] < PINCH_ON) and (pinch_px[i] == best)
 
                 now = time.time()
-                if (pinched == True) and (not prev_pinched[idx]) and (now - last_trigger_time[idx] > cooldown_s):
+                if (pinched == True) and (prev_pinched[idx] == False) and (now - last_trigger_time[idx] > cooldown_s):
                     last_trigger_time[idx] = now
                     cout = str(Taal[idx]) + ' ' + str(idx + 1)
                     if (idx == 0):
